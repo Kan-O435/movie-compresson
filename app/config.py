@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,3 +17,10 @@ UPLOAD_CHUNK_SIZE_BYTES = 1 * 1024 * 1024
 
 DEFAULT_TARGET_SIZE_MB = 9.5
 COMPRESSION_TIMEOUT_SECONDS = 600
+
+_DEFAULT_ALLOWED_ORIGINS = "http://localhost:3000,http://127.0.0.1:3000"
+ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("ALLOWED_ORIGINS", _DEFAULT_ALLOWED_ORIGINS).split(",")
+    if origin.strip()
+]
