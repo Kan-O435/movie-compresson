@@ -1,7 +1,14 @@
 input/*
 output/*
+uploads/*
+outputs/*
 
 !input/.gitkeep
 !output/.gitkeep
+!uploads/.gitkeep
+!outputs/.gitkeep
 
 .DS_Store
+.venv/
+__pycache__/
+*.pyc
