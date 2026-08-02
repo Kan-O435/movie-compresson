@@ -15,7 +15,8 @@ from app.schemas.compression import CompressResponse
 from app.services.compressor import (
     CompressionFailedError,
     CompressionTimeoutError,
-    compress_video,
+    OutputValidationError,
+    run_compression,
 )
 
 router = APIRouter()
@@ -56,25 +57,11 @@ async def compress_endpoint(
         original_size_bytes = input_path.stat().st_size
 
         try:
-            compress_video(input_path, output_path, target_size_mb)
+            output_size_bytes = run_compression(input_path, output_path, target_size_mb)
         except CompressionTimeoutError as exc:
             raise HTTPException(status_code=504, detail=str(exc)) from exc
-        except CompressionFailedError as exc:
+        except (CompressionFailedError, OutputValidationError) as exc:
             raise HTTPException(status_code=500, detail=str(exc)) from exc
-
-        if not output_path.is_file():
-            raise HTTPException(status_code=500, detail="出力ファイルが生成されませんでした")
-
-        output_size_bytes = output_path.stat().st_size
-        if output_size_bytes <= 0:
-            raise HTTPException(status_code=500, detail="出力ファイルが空です")
-
-        target_size_bytes = round(target_size_mb * 1_000_000)
-        if output_size_bytes > target_size_bytes:
-            raise HTTPException(
-                status_code=500,
-                detail="圧縮後のファイルサイズが目標サイズを超過しました",
-            )
     finally:
         input_path.unlink(missing_ok=True)
 
@@ -84,5 +71,5 @@ async def compress_endpoint(
         download_url=f"/download/{output_filename}",
         original_size_bytes=original_size_bytes,
         output_size_bytes=output_size_bytes,
-        target_size_bytes=target_size_bytes,
+        target_size_bytes=round(target_size_mb * 1_000_000),
     )
