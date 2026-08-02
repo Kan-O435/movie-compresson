@@ -1,0 +1,261 @@
+:root {
+  color-scheme: light dark;
+  --color-bg: #ffffff;
+  --color-fg: #1a1a1a;
+  --color-muted: #666666;
+  --color-border: #d9d9d9;
+  --color-primary: #4f5dff;
+  --color-primary-fg: #ffffff;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fdecea;
+  --color-notice-bg: #fff8e1;
+  --color-surface: #f7f7f9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121212;
+    --color-fg: #f0f0f0;
+    --color-muted: #a0a0a0;
+    --color-border: #3a3a3a;
+    --color-primary: #7b86ff;
+    --color-primary-fg: #101018;
+    --color-danger: #ff8a80;
+    --color-danger-bg: #3a1f1d;
+    --color-notice-bg: #3a3220;
+    --color-surface: #1c1c1e;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.6;
+}
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 16px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page-header h1 {
+  font-size: 1.5rem;
+  margin: 0 0 4px;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.upload-form,
+.compression-status,
+.compression-result {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+input[type="file"],
+select {
+  width: 100%;
+  max-width: 100%;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-size: 1rem;
+}
+
+.selected-file-info {
+  border: 1px dashed var(--color-border);
+  border-radius: 6px;
+  padding: 10px;
+  min-width: 0;
+}
+
+.file-name {
+  margin: 0 0 4px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-meta {
+  margin: 0 0 8px;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.notice {
+  margin: 0;
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--color-notice-bg);
+  font-size: 0.9rem;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.primary-button,
+.download-button {
+  display: inline-block;
+  text-align: center;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  border: none;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--color-fg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  min-height: 44px;
+}
+
+.format-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.format-info div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.format-info dt,
+.format-info dd {
+  margin: 0;
+}
+
+.status-label {
+  margin: 0;
+  font-weight: 600;
+}
+
+.status-failed {
+  color: var(--color-danger);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.error-message {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+}
+
+.result-heading {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.result-details {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.result-details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.result-details dt,
+.result-details dd {
+  margin: 0;
+}
+
+.result-actions,
+.failed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.result-actions .download-button {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 12px 12px 48px;
+  }
+
+  .result-actions,
+  .failed-actions {
+    flex-direction: column;
+  }
+
+  .result-actions button,
+  .failed-actions button,
+  .result-actions .download-button {
+    width: 100%;
+  }
+}

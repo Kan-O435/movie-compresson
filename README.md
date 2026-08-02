@@ -150,3 +150,83 @@ python -m pytest
 ```
 
 単体テストはFFmpeg呼び出しをモックしている。実動画による統合確認は`input/sample.mp4`を使い、上記のジョブAPIの手順（作成→状態確認→ダウンロード）を手動で実行する。
+
+## クライアント（Next.js）
+
+`client/`にジョブAPIを操作するNext.jsクライアント（App Router, TypeScript）がある。動画選択→目標サイズ選択→アップロード→ジョブ状態のポーリング→ダウンロードの一連の操作をトップページ1画面で行える。
+
+### 前提条件
+
+- Node.js 20以上（動作確認はNode.js v24.12.0）
+- FastAPIバックエンドが起動していること
+
+### インストール
+
+```bash
+cd client
+npm install
+```
+
+### 環境変数の設定
+
+```bash
+cp .env.local.example .env.local
+```
+
+`.env.local`の`NEXT_PUBLIC_API_BASE_URL`にFastAPIのURLを指定する（デフォルトは`http://127.0.0.1:8000`）。
+
+### 起動方法
+
+1. FastAPIを起動する
+
+   ```bash
+   source .venv/bin/activate
+   uvicorn app.main:app --reload
+   ```
+
+2. 別ターミナルでNext.jsを起動する
+
+   ```bash
+   cd client
+   npm run dev
+   ```
+
+3. ブラウザで `http://localhost:3000` を開く
+
+### 操作方法
+
+1. 「動画ファイル」から`.mp4` `.mov` `.webm` `.mkv`のいずれかを選択する（最大500MB）
+2. 「目標サイズ」からプリセット（Discord無料向け 9.5MB / Nitro Basic向け 49MB / Nitro向け 499MB）を選択する
+3. 「圧縮開始」を押すとアップロード後にジョブが作成され、2秒間隔で状態を自動確認する
+4. 圧縮完了後、元サイズ・圧縮後サイズ・削減率が表示され、「動画をダウンロード」からダウンロードできる
+5. 「別の動画を圧縮する」で状態をリセットし、別の動画を選び直せる
+
+### 利用するAPI
+
+```text
+GET  /health
+POST /jobs
+GET  /jobs/{job_id}
+GET  /jobs/{job_id}/download
+```
+
+### 現在の制約
+
+- ジョブ情報はバックエンドのインメモリストアで管理されており、FastAPI再起動でジョブ状態は失われる
+- ポーリングは最大10分でタイムアウトする（`POLLING_INTERVAL_MS=2000`, `MAX_POLLING_DURATION_MS=600000`）
+- 状態管理ライブラリ・UIライブラリ・axios等は導入しておらず、React標準の`useState`/`useEffect`と`fetch`のみで構成
+- 任意サイズ入力（プリセット以外の目標サイズ指定）は未実装
+- 複数動画の同時アップロード・圧縮履歴・認証は未実装
+
+### CORS
+
+FastAPI側で`http://localhost:3000`と`http://127.0.0.1:3000`をローカル開発用に許可済み（`app/main.py`の`CORSMiddleware`）。許可オリジンは環境変数`ALLOWED_ORIGINS`（カンマ区切り）で上書きできる。
+
+### Lint / Build / Test
+
+```bash
+cd client
+npm run lint
+npm run build
+npm test
+```
