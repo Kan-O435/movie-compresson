@@ -15,6 +15,10 @@ class CompressionFailedError(Exception):
     pass
 
 
+class OutputValidationError(Exception):
+    pass
+
+
 def compress_video(input_path: Path, output_path: Path, target_size_mb: float) -> None:
     try:
         result = subprocess.run(
@@ -42,3 +46,20 @@ def compress_video(input_path: Path, output_path: Path, target_size_mb: float) -
             result.stderr,
         )
         raise CompressionFailedError("動画の圧縮に失敗しました")
+
+
+def run_compression(input_path: Path, output_path: Path, target_size_mb: float) -> int:
+    compress_video(input_path, output_path, target_size_mb)
+
+    if not output_path.is_file():
+        raise OutputValidationError("出力ファイルが生成されませんでした")
+
+    output_size_bytes = output_path.stat().st_size
+    if output_size_bytes <= 0:
+        raise OutputValidationError("出力ファイルが空です")
+
+    target_size_bytes = round(target_size_mb * 1_000_000)
+    if output_size_bytes > target_size_bytes:
+        raise OutputValidationError("圧縮後のファイルサイズが目標サイズを超過しました")
+
+    return output_size_bytes
